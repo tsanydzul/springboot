@@ -12,11 +12,11 @@ public class UserSetting {
 
     @Column(nullable = false)
     @Size(min = 3, max = 100)
-    private String key;
+    private String _key;
 
     @Column(nullable = false)
     @Size(min = 3, max = 100)
-    private String value;
+    private String _value;
 
     private Long user_id;
 
@@ -24,20 +24,20 @@ public class UserSetting {
         return id;
     }
 
-    public String getKey() {
-        return key;
+    public String get_key() {
+        return _key;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public void set_key(String key) {
+        this._key = key;
     }
 
-    public String getValue() {
-        return value;
+    public String get_value() {
+        return _value;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void set_value(String _value) {
+        this._value = _value;
     }
 
     public Long getUser_id() {
