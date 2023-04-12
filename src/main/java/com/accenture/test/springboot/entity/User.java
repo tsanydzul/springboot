@@ -37,6 +37,9 @@ public class User {
     private Boolean is_active;
     private LocalDateTime delete_time;
 
+    public Long getId() {
+        return id;
+    }
     public String getFirst_name() {
         return first_name;
     }
