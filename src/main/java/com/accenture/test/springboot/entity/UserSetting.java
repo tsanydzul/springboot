@@ -1,8 +1,14 @@
 package com.accenture.test.springboot.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 
 import javax.validation.constraints.Size;
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity
 public class UserSetting {
@@ -18,7 +24,10 @@ public class UserSetting {
     @Size(min = 3, max = 100)
     private String _value;
 
-    private Long user_id;
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JsonIgnore
+    private User user;
 
     public Long getId() {
         return id;
@@ -40,11 +49,16 @@ public class UserSetting {
         this._value = _value;
     }
 
-    public Long getUser_id() {
-        return user_id;
+    public User getUser() {
+        return user;
     }
 
-    public void setUser_id(Long user_id) {
-        this.user_id = user_id;
+    public void setUser(User user_id) {
+        this.user = user_id;
+    }
+    public Map<String,String> getMap(){
+        Map<String, String> result = new HashMap<>();
+        result.put(this._key, this._value);
+        return result;
     }
 }

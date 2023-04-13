@@ -1,19 +1,37 @@
 package com.accenture.test.springboot.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 
 import javax.validation.constraints.Size;
+import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.*;
 
 @Entity
 @Table(name="_USER")
+@JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class User {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
+
+    public String getSsn() {
+        return ssn;
+    }
+
+    public void setSsn(String ssn) {
+        this.ssn = ssn;
+    }
+
+    @Column(nullable = false)
+    @Size(min = 16, max = 16)
+    private String ssn;
 
     @Column(nullable = false)
     @Size(min = 3, max = 100)
@@ -25,17 +43,21 @@ public class User {
 
     private Date birth_date;
     @Column(nullable = false)
-    private LocalDateTime created_time;
+    private Instant created_time;
     @Column(nullable = false)
-    private LocalDateTime updated_time;
+    private Instant updated_time;
     @Column(nullable = false)
     @Size(max = 100)
     private String created_by = "SYSTEM";
     @Column(nullable = false)
     @Size(max = 100)
     private String updated_by = "SYSTEM";
-    private Boolean is_active;
-    private LocalDateTime delete_time;
+    private Boolean is_active = true;
+    private Instant delete_time;
+
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private Set<UserSetting> userSetting;
 
     public Long getId() {
         return id;
@@ -72,19 +94,19 @@ public class User {
         this.birth_date = birth_date;
     }
 
-    public LocalDateTime getCreated_time() {
+    public Instant getCreated_time() {
         return created_time;
     }
 
-    public void setCreated_time(LocalDateTime created_time) {
+    public void setCreated_time(Instant created_time) {
         this.created_time = created_time;
     }
 
-    public LocalDateTime getUpdated_time() {
+    public Instant getUpdated_time() {
         return updated_time;
     }
 
-    public void setUpdated_time(LocalDateTime updated_time) {
+    public void setUpdated_time(Instant updated_time) {
         this.updated_time = updated_time;
     }
 
@@ -112,11 +134,30 @@ public class User {
         this.is_active = is_active;
     }
 
-    public LocalDateTime getDelete_time() {
+    public Instant getDelete_time() {
         return delete_time;
     }
 
-    public void setDelete_time(LocalDateTime delete_time) {
+    public void setDelete_time(Instant delete_time) {
         this.delete_time = delete_time;
     }
+
+    public Set<UserSetting> getUserSetting() {
+        return userSetting;
+    }
+
+    public void setUserSetting(Set<UserSetting> userSetting) {
+        this.userSetting = userSetting;
+    }
+
+    public List<Map<String,String>>fetchUserSettings(){
+        if(userSetting != null){
+            List<Map<String,String>> result = new ArrayList<>();
+            userSetting.forEach(it -> result.add(it.getMap()));
+            return result;
+        }else{
+            return null;
+        }
+    }
+
 }
