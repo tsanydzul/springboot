@@ -4,6 +4,7 @@ import com.accenture.test.springboot.entity.User;
 import com.accenture.test.springboot.entity.UserSetting;
 import com.accenture.test.springboot.service.UserService;
 import com.accenture.test.springboot.service.UserSettingService;
+import com.accenture.test.springboot.util.ErrorResponse;
 import com.accenture.test.springboot.util.ResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -41,14 +42,6 @@ public class UserController {
     @PostMapping
     public ResponseEntity<Object> createNewUser(@RequestBody User user) throws Exception {
         return ResponseHandler.singleUser(userService.insert(user), HttpStatus.OK);
-    }
-
-    @GetMapping("/error")
-    public Map<String, String> error(){
-        Map<String, String> map = new HashMap<>();
-        map.put("Asu", "oke");
-        map.put("Anu", "Ane");
-        return  map;
     }
 
     @PutMapping("/{id}")

@@ -3,28 +3,33 @@ package com.accenture.test.springboot.util;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.ErrorResponseException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@ControllerAdvice
-class CustomControllerAdvice {
+@RestControllerAdvice
+class ErrorHandler {
 
-    @ExceptionHandler(NullPointerException.class) // exception handled
+    @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<ErrorResponse> handleNullPointerExceptions(Exception e) {
-        HttpStatus status = HttpStatus.NOT_FOUND; // 404
-
-        return new ResponseEntity<>(new ErrorResponse(status, e.getMessage(), status.value()), status);
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        return new ResponseEntity<>(new ErrorResponse(status.name(), e.getMessage(), status.value()), status);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleExceptions(Exception e) {
-        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR; // 500
-        return new ResponseEntity<>(new ErrorResponse(status, e.getMessage(), status.value()), status);
+        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        return new ResponseEntity<>(new ErrorResponse(status.name(), Constant.MESSAGE_SYSTEM_ERROR, status.value()), status);
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponse> userErrorException(UserNotFoundException e){
+        return new ResponseEntity<>(new ErrorResponse(e.status, e.message, e.code), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ErrorResponse> dataNotFoundException(Exception e){
-        HttpStatus status = HttpStatus.NOT_FOUND; // 500
-        return new ResponseEntity<>(new ErrorResponse(status,Constant.MESSAGE_NO_DATA_WITH_ID, 3000), status);
+    public ResponseEntity<ErrorResponse> userNotFoundException(EntityNotFoundException e){
+        HttpStatus status = HttpStatus.NOT_FOUND;
+        return new ResponseEntity<>(new ErrorResponse(status.name(), Constant.MESSAGE_NO_DATA_WITH_ID, Constant.CODE_DATA_NOT_FOUND), status);
     }
 }

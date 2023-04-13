@@ -8,16 +8,16 @@ import java.util.Date;
 
 @Getter
 @Setter
-public class ErrorResponse {
+public class ErrorResponse{
     private int code;
 
     private String status;
 
     private String message;
 
-    public ErrorResponse(HttpStatus httpStatus, String message, int code) {
+    public ErrorResponse(String httpStatus, String message, int code) {
         this.code = code;
-        this.status = httpStatus.name();
+        this.status = httpStatus;
         this.message = message;
     }
 }

@@ -5,13 +5,21 @@ import com.accenture.test.springboot.entity.UserSetting;
 import com.accenture.test.springboot.repo.UserRepo;
 import com.accenture.test.springboot.repo.UserSettingRepo;
 import com.accenture.test.springboot.util.Constant;
+import com.accenture.test.springboot.util.ErrorResponse;
 import com.accenture.test.springboot.util.Helper;
+import com.accenture.test.springboot.util.UserNotFoundException;
+import org.apache.commons.validator.GenericValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.ErrorResponseException;
 
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.time.format.ResolverStyle;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 @Service
@@ -29,12 +37,13 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public List<User> getAllUser(int max_records, int offset) {
+    public List<User> getAllUser(int max_records, int offset) throws Exception {
         return userRepo.findAll(max_records,offset);
     }
 
     @Override
-    public User insert(User user) {
+    public User insert(User user) throws UserNotFoundException {
+        field_validation(user);
         user.setCreated_time(Instant.now());
         user.setUpdated_time(Instant.now());
         userRepo.save(user);
@@ -45,16 +54,14 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User getById(Long id) throws Exception {
-        return userRepo.getReferenceById(id);
+        User user = userRepo.findByIdAndActive(id);
+        return user;
     }
 
     @Override
     public User updateUser(User user,Long id) throws Exception {
+        field_validation(user);
         User existingUser = getById(id);
-        if(user.getFirst_name() != null) existingUser.setFirst_name(user.getFirst_name());
-        if(user.getMiddle_name() != null) existingUser.setMiddle_name(user.getMiddle_name());
-        if(user.getFamily_name() != null) existingUser.setFamily_name(user.getFamily_name());
-        if(user.getBirth_date() != null) existingUser.setBirth_date(user.getBirth_date());
         existingUser.setUpdated_time(Instant.now());
         userRepo.save(existingUser);
         return existingUser;
@@ -95,5 +102,38 @@ public class UserServiceImpl implements UserService{
             userSettingRepo.save(userSetting);
         }
         return  dataUserSet;
+    }
+
+    public boolean ssnExist(String ssn){
+        Integer userCount = userRepo.findUserWithSSN(ssn);
+        return userCount > 0;
+    }
+
+    public void field_validation(User user) throws UserNotFoundException {
+        String ssn = user.getSsn();
+        if(ssn == null || !ssn.matches("-?\\d+")){
+            throw new UserNotFoundException(Constant.MESSAGE_INVALID_FIELD_OR_VALUE + "SSN", Constant.CODE_NON_UNIQUE,HttpStatus.CONFLICT.name());
+        }
+        if(ssn.length() < 16){
+            for (int i = ssn.length(); i < 16; i++) {
+                ssn = "0"+ ssn;
+            }
+            user.setSsn(ssn);
+        }
+        if(ssn != null && ssn.matches("-?\\d+") && ssnExist(ssn)){
+            throw new UserNotFoundException(Constant.MESSAGE_NON_UNIQUE_SSN, Constant.CODE_NON_UNIQUE,HttpStatus.CONFLICT.name());
+        }
+
+        if(user.getFirst_name() == null){
+            throw new UserNotFoundException(Constant.MESSAGE_INVALID_FIELD_OR_VALUE + "first_name", Constant.CODE_NON_UNIQUE,HttpStatus.CONFLICT.name());
+        }
+
+        if(user.getFamily_name() == null){
+            throw new UserNotFoundException(Constant.MESSAGE_INVALID_FIELD_OR_VALUE + "family_name", Constant.CODE_NON_UNIQUE,HttpStatus.CONFLICT.name());
+        }
+
+        if(user.getBirth_date() == null){
+            throw new UserNotFoundException(Constant.MESSAGE_INVALID_FIELD_OR_VALUE + "birth_date", Constant.CODE_NON_UNIQUE,HttpStatus.CONFLICT.name());
+        }
     }
 }
