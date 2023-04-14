@@ -32,8 +32,8 @@ public class UserRepoTest {
     public void getUser() throws ParseException {
         User user = createUser();
         userRepo.save(user);
-        User userRetrieve = userRepo.findByIdAndActive(1l);
-        Assertions.assertThat(userRetrieve.getId()).isEqualTo(1l);
+        User userRetrieve = userRepo.findByIdAndActive(1L);
+        Assertions.assertThat(userRetrieve.getId()).isEqualTo(1L);
     }
 
     @Test
@@ -41,7 +41,7 @@ public class UserRepoTest {
         User user = createUser();
         user.setIs_active(false);
         userRepo.save(user);
-        User userRetrieve = userRepo.findByIdAndActive(1l);
+        User userRetrieve = userRepo.findByIdAndActive(1L);
         Assertions.assertThat(userRetrieve).isEqualTo(null);
     }
 

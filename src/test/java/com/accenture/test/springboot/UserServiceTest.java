@@ -19,8 +19,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
@@ -61,7 +60,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void givenUserObject_thenInsert_whenFirstNameEmpty_thenReturnException() throws UserErrorException {
+    public void givenUserObject_thenInsert_whenFirstNameEmpty_thenReturnException(){
         user.setFirst_name(null);
         UserErrorException exception = assertThrows(UserErrorException.class, () -> {
             userService.insert(user);
@@ -74,11 +73,11 @@ public class UserServiceTest {
         Integer actualCode = exception.code;
 
         assertTrue(actualMessage.contains(expectedMessage));
-        assertTrue(expectedCode.equals(actualCode));
+        assertEquals(expectedCode, actualCode);
     }
 
     @Test
-    public void givenUserObject_thenInsert_whenFamilyNameEmpty_thenReturnException() throws UserErrorException {
+    public void givenUserObject_thenInsert_whenFamilyNameEmpty_thenReturnException(){
         user.setFirst_name("Jon");
         user.setFamily_name(null);
         UserErrorException exception = assertThrows(UserErrorException.class, () -> {
@@ -92,11 +91,11 @@ public class UserServiceTest {
         Integer actualCode = exception.code;
 
         assertTrue(actualMessage.contains(expectedMessage));
-        assertTrue(expectedCode.equals(actualCode));
+        assertEquals(expectedCode, actualCode);
     }
 
     @Test
-    public void givenUserObject_thenInsert_whenSSNNotValid_thenReturnException() throws UserErrorException {
+    public void givenUserObject_thenInsert_whenSSNNotValid_thenReturnException() {
         user.setFamily_name("Doe");
         user.setSsn("abc");
         UserErrorException exception = assertThrows(UserErrorException.class, () -> {
@@ -110,7 +109,7 @@ public class UserServiceTest {
         Integer actualCode = exception.code;
 
         assertTrue(actualMessage.contains(expectedMessage));
-        assertTrue(expectedCode.equals(actualCode));
+        assertEquals(expectedCode, actualCode);
     }
 
     @Test
@@ -123,7 +122,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void givenSavedUser_whenGetByID_thenReturnUserObject() throws Exception {
+    public void givenSavedUser_whenGetByID_thenReturnUserObject(){
         given(userRepo.findByIdAndActive(1L)).willReturn(user);
 
         User savedUser = userService.getById(1L);
@@ -131,7 +130,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void givenSavedUserInactive_whenGetByID_thenReturnEmpty() throws Exception {
+    public void givenSavedUserInactive_whenGetByID_thenReturnEmpty(){
         given(userRepo.findByIdAndActive(100L)).willReturn(null);
 
         User savedUser = userService.getById(100L);
@@ -144,15 +143,15 @@ public class UserServiceTest {
         given(userRepo.findByIdAndActive(1L)).willReturn(user);
         given(userRepo.save(user)).willReturn(user);
 
-        User userUpdated = userService.updateUser(user,1l);
+        User userUpdated = userService.updateUser(user, 1L);
 
         Assertions.assertThat(userUpdated).isEqualTo(user);
     }
 
     @Test
-    public void givenFindUserObject_userInActive_thenFail() throws Exception {
+    public void givenFindUserObject_userInActive_thenFail(){
         //no data with id 100 in the db
-        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
+        assertThrows(EntityNotFoundException.class, () -> {
             userService.updateUser(user, 100L);
         });
     }
