@@ -17,4 +17,7 @@ public interface UserRepo extends JpaRepository<User, Long>{
 
     @Query(nativeQuery = true, value = "Select * from _USER where is_active=true and ?1")
     User findByIdAndActive(Long id);
+
+    @Query(nativeQuery = true, value = "Select * from _USER where is_active=false and ?1")
+    User findByIdAndInActive(Long id);
 }

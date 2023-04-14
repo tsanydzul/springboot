@@ -64,6 +64,17 @@ public class UserRepoTest {
         Assertions.assertThat(userList.size()).isEqualTo(1);
     }
 
+    @Test
+    public void getInactiveUser() throws ParseException {
+        User user1 = createUser();
+        user1.setIs_active(false);
+
+        userRepo.save(user1);
+        User inactiveUser = userRepo.findByIdAndInActive(1L);
+
+        Assertions.assertThat(inactiveUser).isNotNull();
+    }
+
     public User createUser() throws ParseException {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         Date date = df.parse("1996-02-22");

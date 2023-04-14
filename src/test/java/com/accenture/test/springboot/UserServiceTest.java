@@ -21,6 +21,7 @@ import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -149,12 +150,33 @@ public class UserServiceTest {
     }
 
     @Test
-    public void givenFindUserObject_userInActive_thenFail(){
+    public void givenUpdateObject_userInActive_thenFail(){
         //no data with id 100 in the db
+        when(userRepo.findByIdAndActive(100L)).thenReturn(null);
         assertThrows(EntityNotFoundException.class, () -> {
             userService.updateUser(user, 100L);
         });
     }
 
+    @Test
+    public void givenActiveUser_whenTryToDelete_ThenPass(){
+        //query inactive user will lead to return null
+        when(userRepo.findByIdAndActive(100L)).thenReturn(null);
+        assertThrows(EntityNotFoundException.class, () -> {
+            userService.deleteUser(100L);
+        });
+    }
+
+    @Test
+    public void givenDeletedUser_whenTryToRefresh_ThenPass(){
+        user.setIs_active(false);
+        when(userRepo.findByIdAndActive(1L)).thenReturn(user);
+        when(userRepo.save(user)).thenReturn(user);
+
+        User refreshedUser = userService.refreshUser(1L);
+
+        Assertions.assertThat(refreshedUser.getIs_active()).isEqualTo(true);
+        Assertions.assertThat(refreshedUser.getDelete_time()).isNull();
+    }
 
 }

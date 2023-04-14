@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User refreshUser(Long id){
-        User user = getById(id);
+        User user = userRepo.findByIdAndInActive(id);
         user.setIs_active(true);
         user.setDelete_time(null);
 
