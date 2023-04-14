@@ -4,8 +4,8 @@ import com.accenture.test.springboot.entity.User;
 import com.accenture.test.springboot.repo.UserRepo;
 import com.accenture.test.springboot.repo.UserSettingRepo;
 import com.accenture.test.springboot.service.UserServiceImpl;
-import com.accenture.test.springboot.util.ErrorResponse;
-import com.accenture.test.springboot.util.UserNotFoundException;
+import com.accenture.test.springboot.util.UserErrorException;
+import jakarta.persistence.EntityNotFoundException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,10 +17,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.Date;
 
-import static org.assertj.core.api.ClassBasedNavigableIterableAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
@@ -52,7 +50,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void givenUserObject_whenSave_thenReturnUserObject() throws UserNotFoundException {
+    public void givenUserObject_whenSave_thenReturnUserObject() throws UserErrorException {
         given(userRepo.save(user)).willReturn(user);
 
         User savedUser = userService.insert(user);
@@ -63,9 +61,9 @@ public class UserServiceTest {
     }
 
     @Test
-    public void givenUserObject_thenInsert_whenFirstNameEmpty_thenReturnException() throws UserNotFoundException {
+    public void givenUserObject_thenInsert_whenFirstNameEmpty_thenReturnException() throws UserErrorException {
         user.setFirst_name(null);
-        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> {
+        UserErrorException exception = assertThrows(UserErrorException.class, () -> {
             userService.insert(user);
         });
 
@@ -80,10 +78,10 @@ public class UserServiceTest {
     }
 
     @Test
-    public void givenUserObject_thenInsert_whenFamilyNameEmpty_thenReturnException() throws UserNotFoundException {
+    public void givenUserObject_thenInsert_whenFamilyNameEmpty_thenReturnException() throws UserErrorException {
         user.setFirst_name("Jon");
         user.setFamily_name(null);
-        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> {
+        UserErrorException exception = assertThrows(UserErrorException.class, () -> {
             userService.insert(user);
         });
 
@@ -98,10 +96,10 @@ public class UserServiceTest {
     }
 
     @Test
-    public void givenUserObject_thenInsert_whenSSNNotValid_thenReturnException() throws UserNotFoundException {
+    public void givenUserObject_thenInsert_whenSSNNotValid_thenReturnException() throws UserErrorException {
         user.setFamily_name("Doe");
         user.setSsn("abc");
-        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> {
+        UserErrorException exception = assertThrows(UserErrorException.class, () -> {
             userService.insert(user);
         });
 
@@ -116,7 +114,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void givenUserObject_thenInsert_whenSSNNot16Digits_thenShouldPass() throws UserNotFoundException {
+    public void givenUserObject_thenInsert_whenSSNNot16Digits_thenShouldPass() throws UserErrorException {
         given(userRepo.save(user)).willReturn(user);
 
         user.setSsn("1234");
@@ -141,7 +139,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void givenUserObject_userActive_thenShouldPass() throws Exception {
+    public void givenUpdateUser_userActive_thenShouldPass() throws Exception {
         user.setId(1L);
         given(userRepo.findByIdAndActive(1L)).willReturn(user);
         given(userRepo.save(user)).willReturn(user);
@@ -152,12 +150,12 @@ public class UserServiceTest {
     }
 
     @Test
-    public void givenUserObject_userInActive_thenShouldPass() throws Exception {
-        given(userRepo.findByIdAndActive(1L)).willReturn(null);
-        given(userRepo.save(user)).willReturn(user);
-
-        User userUpdated = userService.updateUser(user,1l);
-
-        Assertions.assertThat(userUpdated).isEqualTo(user);
+    public void givenFindUserObject_userInActive_thenFail() throws Exception {
+        //no data with id 100 in the db
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> {
+            userService.updateUser(user, 100L);
+        });
     }
+
+
 }

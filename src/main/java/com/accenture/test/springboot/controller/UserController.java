@@ -1,23 +1,16 @@
 package com.accenture.test.springboot.controller;
 
 import com.accenture.test.springboot.entity.User;
-import com.accenture.test.springboot.entity.UserSetting;
 import com.accenture.test.springboot.service.UserService;
 import com.accenture.test.springboot.service.UserSettingService;
-import com.accenture.test.springboot.util.ErrorResponse;
 import com.accenture.test.springboot.util.ResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @RestController
 @RequestMapping("v1/users")

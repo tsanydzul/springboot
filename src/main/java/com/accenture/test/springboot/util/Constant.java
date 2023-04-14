@@ -1,11 +1,8 @@
 package com.accenture.test.springboot.util;
 
 public class Constant {
-    public static String ISO_8601BASIC_DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss'Z'";
     public static String DEFAULT_VALUE_WIDGET_ORDER = "1,2,3,4,5";
     public static String DEFAULT_VALUE_USER_SETTING_LOV = "false";
-
-    public static String MESSAGE_NO_DATA= "No Data Found";
     public static String MESSAGE_NO_DATA_WITH_ID = "Cannot find resource with given id";
     public static String MESSAGE_NON_UNIQUE_SSN =  "Existing SSN Found, Use Another SSN";
     public static String MESSAGE_INVALID_FIELD_OR_VALUE =  "Invalid Value for ";

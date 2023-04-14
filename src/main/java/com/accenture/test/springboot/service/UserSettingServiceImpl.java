@@ -2,7 +2,6 @@ package com.accenture.test.springboot.service;
 
 import com.accenture.test.springboot.entity.User;
 import com.accenture.test.springboot.repo.UserRepo;
-import com.accenture.test.springboot.util.Constant;
 import com.accenture.test.springboot.util.Helper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,14 +28,10 @@ public class UserSettingServiceImpl implements UserSettingService{
                     if(value != null && !it.get_key().equals(Helper.Env.WIDGET_ORDER.getDesc())){
                         if((value.equals("false") || value.equals("true"))){
                             it.set_value(value);
-                        }else{
-//                           new Exception("error");
                         }
                     }else{
-                        if(value != null && Helper.WidgetOrderValidation(value)){
+                        if(value != null && widgetOrderValidation(value)) {
                             it.set_value(value);
-                        }else{
-//                           new Exception("error");
                         }
                     }
                 });
@@ -48,5 +43,19 @@ public class UserSettingServiceImpl implements UserSettingService{
         }
     }
 
+    public Boolean widgetOrderValidation(String input) {
+        for (int i = 1; i <= 5; i++) {
+            String s = String.valueOf(input.charAt(i - 1));
+            if(i%2 == 1){
+                int value = Integer.parseInt(s);
+                if(!(value > 0 && value <6)) {
+                    return false;
+                }
+            }else if(!s.equals(",")){
+                return false;
+            }
+        }
+        return true;
+    }
 
 }

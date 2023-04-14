@@ -3,7 +3,6 @@ package com.accenture.test.springboot.util;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.ErrorResponseException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -22,8 +21,8 @@ class ErrorHandler {
         return new ResponseEntity<>(new ErrorResponse(status.name(), Constant.MESSAGE_SYSTEM_ERROR, status.value()), status);
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ErrorResponse> userErrorException(UserNotFoundException e){
+    @ExceptionHandler(UserErrorException.class)
+    public ResponseEntity<ErrorResponse> userErrorException(UserErrorException e){
         return new ResponseEntity<>(new ErrorResponse(e.status, e.message, e.code), HttpStatus.NOT_FOUND);
     }
 

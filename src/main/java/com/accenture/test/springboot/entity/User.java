@@ -3,14 +3,12 @@ package com.accenture.test.springboot.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.Size;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
