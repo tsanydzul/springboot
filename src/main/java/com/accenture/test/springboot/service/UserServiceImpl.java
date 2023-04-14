@@ -33,12 +33,12 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User insert(User user) throws UserErrorException {
-        field_validation(user);
-        user.setCreated_time(Instant.now());
-        user.setUpdated_time(Instant.now());
-        userRepo.save(user);
+        User newUser = field_validation(user);
+        newUser.setCreated_time(Instant.now());
+        newUser.setUpdated_time(Instant.now());
+        userRepo.save(newUser);
 
-        user.setUserSetting(defaultUserSetting(user));
+        user.setUserSetting(defaultUserSetting(newUser));
         return user;
     }
 
@@ -53,9 +53,15 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User updateUser(User user,Long id) throws Exception {
-        field_validation(user);
+        User newUser = field_validation(user);
         User existingUser = getById(id);
         existingUser.setUpdated_time(Instant.now());
+        existingUser.setSsn(newUser.getSsn());
+        existingUser.setFirst_name(newUser.getFirst_name());
+        existingUser.setMiddle_name(newUser.getMiddle_name());
+        existingUser.setFamily_name(newUser.getFamily_name());
+        existingUser.setBirth_date(newUser.getBirth_date());
+
         userRepo.save(existingUser);
         return existingUser;
     }
@@ -102,7 +108,7 @@ public class UserServiceImpl implements UserService{
         return userCount > 0;
     }
 
-    public void field_validation(User user) throws UserErrorException {
+    public User field_validation(User user) throws UserErrorException {
         StringBuilder ssn = new StringBuilder(user.getSsn());
         if(ssn == null || !ssn.toString().matches("-?\\d+")){
             throw new UserErrorException(Constant.MESSAGE_INVALID_FIELD_OR_VALUE + "SSN", Constant.CODE_INVALID_FIELD_OR_VALUE,HttpStatus.CONFLICT.name());
@@ -128,5 +134,6 @@ public class UserServiceImpl implements UserService{
         if(user.getBirth_date() == null){
             throw new UserErrorException(Constant.MESSAGE_INVALID_FIELD_OR_VALUE + "birth_date", Constant.CODE_INVALID_FIELD_OR_VALUE,HttpStatus.CONFLICT.name());
         }
+        return user;
     }
 }
